@@ -79,14 +79,24 @@ class HomeViewModel extends BaseViewModel {
     try {
       final prefs = await _prefsInstance;
 
+      print("BEFORE DASHBOARD API");
+
       final results = await Future.wait([
         _service.dashboard(),
         _service.getEmpName(),
         _service.fetchRoles(),
       ]);
 
+      print("AFTER DASHBOARD API");
+      print(results[0]);
+
       _commit(() {
         _dashboard = results[0] as DashBoard?;
+        print("========== DASHBOARD FLAGS ==========");
+        print("isMeter    : ${_dashboard?.isMeter}");
+        print("isPhoto    : ${_dashboard?.isPhoto}");
+        print("isLocation : ${_dashboard?.isLocation}");
+        print("=====================================");
         employeeData = results[1] as EmpData?;
         availableDocTypes =
             (results[2] as List).map((e) => e.toString()).toList();
@@ -246,7 +256,7 @@ class HomeViewModel extends BaseViewModel {
     BuildContext context, {
     File? photoFile,
     String? meterReading,
-    required Position position,
+    Position? position,
   }) async {
     _setLoading(logType, true);
 
@@ -269,11 +279,16 @@ class HomeViewModel extends BaseViewModel {
           finalPhoto = photoFile; // fallback ✅
         }
       }
+      final latitude =
+          position?.latitude.toString() ?? "0";
+
+      final longitude =
+          position?.longitude.toString() ?? "0";
 
       final success = await _service.employeeCheckin(
         logType: logType,
-        latitude: position.latitude.toString(),
-        longitude: position.longitude.toString(),
+        latitude: latitude,
+        longitude: longitude,
         meterReading: meterReading,
         photoFile: finalPhoto,
       );

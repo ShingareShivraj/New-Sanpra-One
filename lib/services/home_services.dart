@@ -25,7 +25,12 @@ class HomeServices {
       );
 
       if (response.statusCode == 200) {
+        print("========== DASHBOARD RESPONSE ==========");
+        print(response.data);
+        print("========================================");
         return DashBoard.fromJson(response.data["data"]);
+
+
       } else {
         _showToast("Unable to load dashboard data");
       }
@@ -33,6 +38,7 @@ class HomeServices {
       _logger.e(e);
       _handleDioError(e, context: "dashboard");
     }
+
     return null;
   }
 

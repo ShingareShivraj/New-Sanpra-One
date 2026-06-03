@@ -38,13 +38,22 @@ class ListQuotationScreen extends StatelessWidget {
               /// SEARCH BAR
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
-                child: SearchBar(
-                  hintText: "Search by customer name",
-                  leading: const Icon(Icons.search),
-                  onChanged: model.searchPartyName,
-                  elevation: const WidgetStatePropertyAll(0),
-                  backgroundColor: WidgetStatePropertyAll(
-                    theme.colorScheme.surfaceContainerHigh,
+                child: Container(
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFFDBEAFE)),
+                  ),
+                  child: TextField(
+                    onChanged: model.searchPartyName,
+                    style: const TextStyle(fontSize: 13),
+                    decoration: const InputDecoration(
+                      hintText: "Search quotation / customer",
+                      prefixIcon: Icon(Icons.search_rounded, size: 18),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(vertical: 12),
+                    ),
                   ),
                 ),
               ),
@@ -66,115 +75,173 @@ class ListQuotationScreen extends StatelessWidget {
                       final item = model.filterquotationlist[index];
 
                       return InkWell(
-                        borderRadius: BorderRadius.circular(16),
-                        onTap: () => model.onRowClick(context, item),
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () => model.onRowClick(context, item),
 
-                        child: Container(
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                                color: theme.colorScheme.outlineVariant),
-                          ),
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(18),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.04),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                              border: Border.all(color: const Color(0xFFE5E7EB)),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
 
-                          child: Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
-                            children: [
+                                /// 🔝 HEADER (Customer + Status)
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
 
-                              /// HEADER
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      item.name ?? "",
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 15,
+                                    /// 👤 CUSTOMER NAME + ID
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            item.customerName ?? "Unknown Customer",
+                                            style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w700,
+                                              color: Color(0xFF111827),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            item.name ?? "",
+                                            style: const TextStyle(
+                                              fontSize: 11.5,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.share),
-                                    onPressed: () {
-                                      model.shareQuotation(item);
-                                    },
-                                  ),
 
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: model.getQuotationForStatus(
-                                          item.quotationTo ?? ""),
-                                      borderRadius:
-                                      BorderRadius.circular(20),
-                                    ),
-                                    child: Text(
-                                      item.quotationTo ?? "",
-                                      style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  ),
-                                  SizedBox(width: 10,),
-                                  /// STATUS CHIP
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: model.getColorForStatus(
-                                          item.status ?? ""),
-                                      borderRadius:
-                                      BorderRadius.circular(20),
-                                    ),
-                                    child: Text(
+                                    /// STATUS
+                                    _statusDotPill(
                                       item.status ?? "",
-                                      style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600),
+                                      model.getColorForStatus(item.status ?? ""),
                                     ),
-                                  ),
-                                ],
-                              ),
-
-                              const SizedBox(height: 4),
-
-                              /// DATE
-                              Text(
-                                item.transactionDate ?? "",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade600,
+                                  ],
                                 ),
-                              ),
 
-                              const Divider(height: 18),
+                                const SizedBox(height: 12),
 
-                              /// INFO ROW
-                              Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
-                                children: [
-                                  _infoTile(
-                                      "Customer", item.customerName),
-                                  _infoTile(
-                                      "Items",
-                                      item.totalQty?.toString() ??
-                                          "0"),
-                                  _infoTile(
-                                    "Amount",
-                                    "₹ ${item.grandTotal ?? 0}",
-                                    color: Colors.green,
+                                /// 🧾 TYPE + DATE ROW
+                                Row(
+                                  children: [
+
+                                    /// TYPE
+                                    _softTag(
+                                      item.quotationTo ?? "",
+                                      model.getQuotationForStatus(item.quotationTo ?? ""),
+                                    ),
+
+                                    const SizedBox(width: 10),
+
+                                    /// DATE
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.schedule, size: 12, color: Colors.grey),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          item.transactionDate ?? "",
+                                          style: const TextStyle(
+                                            fontSize: 11.5,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+
+                                const SizedBox(height: 14),
+
+                                /// 💰 AMOUNT (highlighted)
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFF0FDF4),
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.currency_rupee, size: 16, color: Color(0xFF059669)),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        "${item.grandTotal ?? 0}",
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                          color: Color(0xFF059669),
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      Text(
+                                        "${item.totalQty ?? 0} items",
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.black54,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                const SizedBox(height: 12),
+
+                                /// ⚡ ACTION ROW
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+
+                                    /// LEFT SIDE INFO
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.person_outline, size: 14, color: Colors.grey),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          item.customerName ?? "",
+                                          style: const TextStyle(fontSize: 12, color: Colors.black54),
+                                        ),
+                                      ],
+                                    ),
+
+                                    /// RIGHT ACTIONS
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.share_outlined, size: 20),
+                                          onPressed: () => model.shareQuotation(item),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: const Color(0xFFEEF2FF),
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                          child: IconButton(
+                                            icon: const Icon(Icons.arrow_forward_ios, size: 16),
+                                            onPressed: () => model.onRowClick(context, item),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          )
                       );
                     },
                   ),
@@ -198,6 +265,109 @@ class ListQuotationScreen extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+
+  Widget _statusDotPill(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 5),
+          Text(
+            text,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _softTag(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
+      ),
+    );
+  }
+
+  Widget _pill({required String text, required Color color}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
+      ),
+    );
+  }
+
+  Widget _infoBlock(String label, String? value, {Color? color}) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 11,
+              color: Colors.black54,
+            ),
+          ),
+          const SizedBox(height: 3),
+          Text(
+            value ?? "",
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: color ?? const Color(0xFF1E3A8A),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _divider() {
+    return Container(
+      width: 1,
+      height: 32,
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      color: const Color(0xFFDBEAFE),
     );
   }
 

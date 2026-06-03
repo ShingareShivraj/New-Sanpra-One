@@ -29,6 +29,7 @@ import '../self_orders/list_sales_order/list_self_order_screen.dart';
 import '../stock_screen/stock_screen.dart';
 import '../tracking_screen/background_service.dart';
 import '../tracking_screen/track_person_page.dart';
+import '../sales_order/list_sales_order/list_sales_order_screen.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -247,8 +248,8 @@ class _HomePageState extends State<HomePage> {
                     ElevatedButton(
                       onPressed: () async {
 
-                        bool isTrackingEnabled =
-                            model.dashboard.trackingEnabled == true;
+                        // bool isTrackingEnabled =
+                        //     model.dashboard.trackingEnabled == true;
 
                         final nextType = model.isCheckedIn ? "OUT" : "IN";
 
@@ -262,63 +263,22 @@ class _HomePageState extends State<HomePage> {
                         if (model.isCheckedIn) {
 
                           // 👉 TRACKING OFF → SLIDE SCREEN
-                          if (!isTrackingEnabled) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => CheckOutScreen(model: model),
-                              ),
-                            );
-                            return;
-                          }
+                          // if (!isTrackingEnabled) {
+                          //   Navigator.push(
+                          //     context,
+                          //     MaterialPageRoute(
+                          //       builder: (_) => CheckOutScreen(model: model),
+                          //     ),
+                          //   );
+                          //   return;
+                          // }
 
                           // 👉 TRACKING ON → FULL FLOW
                           // 1️⃣ Meter Reading
-                          meterReading = await Navigator.push<String>(
-                            context,
-                            MaterialPageRoute(
-                              fullscreenDialog: true,
-                              builder: (_) => MeterReadingScreen(type: nextType),
-                            ),
-                          );
-
-                          if (!mounted || meterReading == null) return;
-
-                          // 2️⃣ Photo
-                          final photoPath = await Navigator.push<String>(
-                            context,
-                            MaterialPageRoute(
-                              fullscreenDialog: true,
-                              builder: (_) => PhotoCaptureScreen(type: nextType),
-                            ),
-                          );
-
-                          if (!mounted || photoPath == null) return;
-                          photoFile = File(photoPath);
-
-                          // 3️⃣ Location
-                          position = await Navigator.push<Position>(
-                            context,
-                            MaterialPageRoute(
-                              fullscreenDialog: true,
-                              builder: (_) => LocationScreen(type: nextType),
-                            ),
-                          );
-
-                          if (!mounted || position == null) {
-                            _showError(context, "Location access failed");
-                            return;
-                          }
-                        }
-
-                        // =========================
-                        // 🟢 DAY-IN LOGIC
-                        // =========================
-                        else {
-
-                          // 👉 TRACKING ON → FULL FLOW
-                          if (isTrackingEnabled) {
-                            // 1️⃣ Meter Reading
+                          print("UI isMeter = ${model.dashboard.isMeter}");
+                          print("UI isPhoto = ${model.dashboard.isPhoto}");
+                          print("UI isLocation = ${model.dashboard.isLocation}");
+                          if (model.dashboard.isMeter == true) {
                             meterReading = await Navigator.push<String>(
                               context,
                               MaterialPageRoute(
@@ -328,8 +288,12 @@ class _HomePageState extends State<HomePage> {
                             );
 
                             if (!mounted || meterReading == null) return;
+                          }
 
-                            // 2️⃣ Photo
+
+
+                          // 2️⃣ Photo
+                          if (model.dashboard.isPhoto == true) {
                             final photoPath = await Navigator.push<String>(
                               context,
                               MaterialPageRoute(
@@ -339,9 +303,13 @@ class _HomePageState extends State<HomePage> {
                             );
 
                             if (!mounted || photoPath == null) return;
-                            photoFile = File(photoPath);
 
-                            // 3️⃣ Location
+                            photoFile = File(photoPath);
+                          }
+
+
+                          // 3️⃣ Location
+                          if (model.dashboard.isLocation == true) {
                             position = await Navigator.push<Position>(
                               context,
                               MaterialPageRoute(
@@ -355,13 +323,69 @@ class _HomePageState extends State<HomePage> {
                               return;
                             }
                           }
+                        }
+
+                        // =========================
+                        // 🟢 DAY-IN LOGIC
+                        // =========================
+                        else {
+
+                          // 👉 TRACKING ON → FULL FLOW
+                          // if (isTrackingEnabled) {
+                            // 1️⃣ Meter Reading
+                          print("UI isMeter = ${model.dashboard.isMeter}");
+                          print("UI isPhoto = ${model.dashboard.isPhoto}");
+                          print("UI isLocation = ${model.dashboard.isLocation}");
+                            if (model.dashboard.isMeter == true) {
+                              meterReading = await Navigator.push<String>(
+                                context,
+                                MaterialPageRoute(
+                                  fullscreenDialog: true,
+                                  builder: (_) => MeterReadingScreen(type: nextType),
+                                ),
+                              );
+
+                              if (!mounted || meterReading == null) return;
+                            }
+
+                            // 2️⃣ Photo
+                            if (model.dashboard.isPhoto == true) {
+                              final photoPath = await Navigator.push<String>(
+                                context,
+                                MaterialPageRoute(
+                                  fullscreenDialog: true,
+                                  builder: (_) => PhotoCaptureScreen(type: nextType),
+                                ),
+                              );
+
+                              if (!mounted || photoPath == null) return;
+
+                              photoFile = File(photoPath);
+                            }
+
+                            // 3️⃣ Location
+                            if (model.dashboard.isLocation == true) {
+                              position = await Navigator.push<Position>(
+                                context,
+                                MaterialPageRoute(
+                                  fullscreenDialog: true,
+                                  builder: (_) => LocationScreen(type: nextType),
+                                ),
+                              );
+
+                              if (!mounted || position == null) {
+                                _showError(context, "Location access failed");
+                                return;
+                              }
+                            }
+
 
                           // 👉 TRACKING OFF → DIRECT LOCATION
-                          else {
-                            position = await Geolocator.getCurrentPosition(
-                              desiredAccuracy: LocationAccuracy.high,
-                            );
-                          }
+                          // else {
+                          //   position = await Geolocator.getCurrentPosition(
+                          //     desiredAccuracy: LocationAccuracy.high,
+                          //   );
+                          // }
                         }
 
                         // =========================
@@ -383,7 +407,7 @@ class _HomePageState extends State<HomePage> {
                           context,
                           photoFile: photoFile,
                           meterReading: meterReading,
-                          position: position!,
+                          position: position,
                         );
 
                         if (!mounted) return;
@@ -499,97 +523,97 @@ class _HomePageState extends State<HomePage> {
           ),
 
           SizedBox(height: 20),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: const [
-                    Icon(Icons.location_on, color: Colors.blueAccent),
-                    SizedBox(width: 8),
-                    Text(
-                      "Current Area",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                const Text(
-                  "Tap to change area",
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.black45,
-                  ),
-                ),
-                const SizedBox(height: 14),
-                CustomDropdownButton2(
-                  value: model.selectedTerritory,
-                  items: model.territoryList,
-                  hintText: 'Select Area / Territory',
-                  onChanged: (value) {
-                    if (value != null) {
-                      model.setSelectedTerritory(value);
-                    }
-                  },
-                  validator: (value) => (value == null || value.isEmpty)
-                      ? 'Please select an area'
-                      : null,
-                  labelText: '',
-                ),
-              ],
-            ),
-          ),
+          // Container(
+          //   padding: const EdgeInsets.all(16),
+          //   decoration: BoxDecoration(
+          //     color: Colors.white,
+          //     borderRadius: BorderRadius.circular(16),
+          //     boxShadow: [
+          //       BoxShadow(
+          //         color: Colors.black.withOpacity(0.05),
+          //         blurRadius: 10,
+          //         offset: const Offset(0, 4),
+          //       ),
+          //     ],
+          //   ),
+            // child: Column(
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     Row(
+            //       children: const [
+            //         Icon(Icons.location_on, color: Colors.blueAccent),
+            //         SizedBox(width: 8),
+            //         Text(
+            //           "Current Area",
+            //           style: TextStyle(
+            //             fontSize: 18,
+            //             fontWeight: FontWeight.w600,
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //     const SizedBox(height: 4),
+            //     const Text(
+            //       "Tap to change area",
+            //       style: TextStyle(
+            //         fontSize: 13,
+            //         color: Colors.black45,
+            //       ),
+            //     ),
+            //     const SizedBox(height: 14),
+            //     CustomDropdownButton2(
+            //       value: model.selectedTerritory,
+            //       items: model.territoryList,
+            //       hintText: 'Select Area / Territory',
+            //       onChanged: (value) {
+            //         if (value != null) {
+            //           model.setSelectedTerritory(value);
+            //         }
+            //       },
+            //       validator: (value) => (value == null || value.isEmpty)
+            //           ? 'Please select an area'
+            //           : null,
+            //       labelText: '',
+            //     ),
+            //   ],
+            // ),
+
 
           const SizedBox(height: 24),
 
           // ---------------------------------------------------------
           // If NO Territory → Show Friendly Message, Hide Dashboard
           // ---------------------------------------------------------
-          if (model.selectedTerritory == null) ...[
-            Center(
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 6,
-                        offset: Offset(0, 2))
-                  ],
-                ),
-                child: Column(
-                  children: const [
-                    Icon(Icons.info, color: Colors.blueAccent, size: 40),
-                    SizedBox(height: 12),
-                    Text(
-                      "Please select your Territory to continue",
-                      textAlign: TextAlign.center,
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 40),
-          ] else ...[
+          // if (model.selectedTerritory == null) ...[
+          //   Center(
+          //     child: Container(
+          //       padding: const EdgeInsets.all(20),
+          //       decoration: BoxDecoration(
+          //         color: Colors.white,
+          //         borderRadius: BorderRadius.circular(16),
+          //         boxShadow: [
+          //           BoxShadow(
+          //               color: Colors.black12,
+          //               blurRadius: 6,
+          //               offset: Offset(0, 2))
+          //         ],
+          //       ),
+          //       child: Column(
+          //         children: const [
+          //           Icon(Icons.info, color: Colors.blueAccent, size: 40),
+          //           SizedBox(height: 12),
+          //           Text(
+          //             "Please select your Territory to continue",
+          //             textAlign: TextAlign.center,
+          //             style:
+          //                 TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          //   SizedBox(height: 40),
+          // ] else ...[
             // Quick Actions + rest of dashboard content
             const Text("Quick Actions",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
@@ -657,7 +681,7 @@ class _HomePageState extends State<HomePage> {
                             Navigator.pushNamed(context, Routes.visitScreen),
                       ),
                     ),
-                  if (model.isFormAvailableForDocType("Sales Order"))
+                  if (model.isFormAvailableForDocType("Quotation"))
                     Padding(
                       padding: const EdgeInsets.only(right: 16.0),
                       child: _QuickActionCard(
@@ -842,7 +866,7 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
-          ]
+
         ]),
       ),
     );
@@ -1112,6 +1136,12 @@ class _QuickActionGridState extends State<QuickActionGrid>
           "label": "Quotation",
           "icon": Iconsax.shopping_cart,
           "route": Routes.listQuotationScreen
+        },
+      if (widget.model.isFormAvailableForDocType("Sales Order"))
+        {
+          "label": "Sales Order",
+          "icon": Iconsax.shopping_cart,
+          "route": Routes.listOrderScreen
         },
       // if (widget.model.isFormAvailableForDocType("Delivery Note"))
       //   {
@@ -1465,6 +1495,7 @@ class _CheckInLockScreenState extends State<CheckInLockScreen> {
   // ================= CHECK-IN FLOW =================
 
   Future<void> _handleCheckIn(BuildContext context) async {
+    const nextType = "IN";
     if (_processing) return;
 
     setState(() {
@@ -1483,54 +1514,60 @@ class _CheckInLockScreenState extends State<CheckInLockScreen> {
       // =========================
       // ✅ IF TRACKING ENABLED
       // =========================
-      if (isTrackingEnabled) {
-        // 1️⃣ Meter reading
-        meterReading = await Navigator.push<String>(
-          context,
-          MaterialPageRoute(
-            fullscreenDialog: true,
-            builder: (_) => const MeterReadingScreen(type: "IN"),
-          ),
-        );
 
-        if (!mounted || meterReading == null) return _reset();
+        // 1️⃣ Meter reading
+        if (widget.model.dashboard.isMeter == true) {
+          meterReading = await Navigator.push<String>(
+            context,
+            MaterialPageRoute(
+              fullscreenDialog: true,
+              builder: (_) => MeterReadingScreen(type: nextType),
+            ),
+          );
+
+          if (!mounted || meterReading == null) return;
+        }
+
 
         // 2️⃣ Photo
-        final photoPath = await Navigator.push<String>(
-          context,
-          MaterialPageRoute(
-            fullscreenDialog: true,
-            builder: (_) => const PhotoCaptureScreen(type: "IN"),
-          ),
-        );
+        if (widget.model.dashboard.isPhoto == true) {
+          final photoPath = await Navigator.push<String>(
+            context,
+            MaterialPageRoute(
+              fullscreenDialog: true,
+              builder: (_) => PhotoCaptureScreen(type: nextType),
+            ),
+          );
 
-        if (!mounted || photoPath == null) return _reset();
-        photoFile = File(photoPath);
+          if (!mounted || photoPath == null) return;
 
+          photoFile = File(photoPath);
+        }
         // 3️⃣ Location
-        position = await Navigator.push<Position>(
-          context,
-          MaterialPageRoute(
-            fullscreenDialog: true,
-            builder: (_) => const LocationScreen(type: "IN"),
-          ),
-        );
+        if (widget.model.dashboard.isLocation == true) {
+          position = await Navigator.push<Position>(
+            context,
+            MaterialPageRoute(
+              fullscreenDialog: true,
+              builder: (_) => LocationScreen(type: nextType),
+            ),
+          );
 
-        if (!mounted || position == null) return _reset();
-      }
+          if (!mounted || position == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text("Location access failed"),
+              ),
+            );
+            return;
+          }
+        }
+
 
       // =========================
       // 🚀 IF TRACKING DISABLED
       // =========================
-      else {
-        // 👉 directly get location silently (no UI)
-        position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high,
-        );
 
-        // 👉 dummy photo (or skip if backend allows null)
-        photoFile = null; // ⚠️ or handle backend optional
-      }
 
       // =========================
       // API CALL
@@ -1540,7 +1577,7 @@ class _CheckInLockScreenState extends State<CheckInLockScreen> {
         context,
         photoFile: photoFile,
         meterReading: meterReading,
-        position: position!,
+        position: position,
       );
       print("CHECKIN SUCCESS: $success");
 
@@ -1602,7 +1639,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
       Position? position;
 
-      if (isTrackingEnabled) {
+
         position = await Navigator.push<Position>(
           context,
           MaterialPageRoute(
@@ -1618,11 +1655,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
           );
           return;
         }
-      } else {
-        position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high,
-        );
-      }
+
 
       if (position == null) {
         ScaffoldMessenger.of(context).showSnackBar(

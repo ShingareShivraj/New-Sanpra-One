@@ -7,6 +7,9 @@ class DashBoard {
   List<SalesPerson>? salesPerson;
   String? role;
   bool? trackingEnabled;
+  bool? isMeter;
+  bool? isPhoto;
+  bool? isLocation;
   List<String>? territorylist;
   String? empName;
   String? email;
@@ -24,6 +27,9 @@ class DashBoard {
       this.salesPerson,
       this.role,
       this.trackingEnabled,
+        this.isMeter,
+        this.isPhoto,
+        this.isLocation,
       this.territorylist,
       this.empName,
       this.email,
@@ -48,6 +54,9 @@ class DashBoard {
     }
     role = json['role'];
     trackingEnabled = json['tracking_enabled'];
+    isMeter = json['is_meter'];
+    isPhoto = json['is_photo'];
+    isLocation = json['is_location'];
     territorylist = json['territorylist'].cast<String>();
     empName = json['emp_name'];
     email = json['email'];
@@ -73,6 +82,9 @@ class DashBoard {
     }
     data['role'] = this.role;
     data['tracking_enabled'] = this.trackingEnabled;
+    data['is_meter'] = isMeter;
+    data['is_photo'] = isPhoto;
+    data['is_location'] = isLocation;
     data['territorylist'] = this.territorylist;
     data['emp_name'] = this.empName;
     data['email'] = this.email;
