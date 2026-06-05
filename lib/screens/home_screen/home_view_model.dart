@@ -35,6 +35,7 @@ class HomeViewModel extends BaseViewModel {
 
   bool checkInStatusLoaded = false;
   bool isCheckedIn = false;
+  bool skipCheckInScreen = false;
   bool isHide = false;
 
   bool lazyDataLoaded = false;

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:stacked/stacked.dart';
 
 import '../../../router.router.dart';
+import '../../../services/add_visit_services.dart';
 
 class VisitViewModel extends BaseViewModel {
   VisitViewModel({ListVisitServices? services})
@@ -12,6 +13,7 @@ class VisitViewModel extends BaseViewModel {
   final TextEditingController searchController = TextEditingController();
 
   final ListVisitServices _services;
+  AddVisitModel? activeVisit;
 
   // Data
   List<AddVisitModel> _visitList = const [];
@@ -57,6 +59,9 @@ class VisitViewModel extends BaseViewModel {
     final now = DateTime.now();
     _fromDate ??= DateTime(now.year, now.month, now.day);
     _toDate ??= DateTime(now.year, now.month, now.day);
+
+    activeVisit =
+    await AddVisitServices().getActiveVisit();
 
     await _loadVisits(
       from: _fromDate!,
@@ -141,12 +146,32 @@ class VisitViewModel extends BaseViewModel {
         from: _fromDate!, to: _toDate!, useCache: true, showBusy: true);
   }
 
-  void onRowClick(BuildContext context, AddVisitModel visit) {
-    Navigator.pushNamed(
-      context,
-      Routes.updateVisitScreen,
-      arguments: UpdateVisitScreenArguments(updateId: visit.name ?? ""),
-    );
+  void onRowClick(
+      BuildContext context,
+      AddVisitModel visit,
+      ) {
+
+    if (visit.status == "In Progress") {
+
+      Navigator.pushNamed(
+        context,
+        Routes.addVisitScreen,
+        arguments: AddVisitScreenArguments(
+          VisitId: visit.name ?? "",
+        ),
+      );
+
+    } else {
+
+      Navigator.pushNamed(
+        context,
+        Routes.updateVisitScreen,
+        arguments: UpdateVisitScreenArguments(
+          updateId: visit.name ?? "",
+        ),
+      );
+
+    }
   }
 
   // ---------------- Internal ----------------

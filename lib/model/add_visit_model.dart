@@ -22,6 +22,7 @@ class AddVisitModel {
   String? visitOutTime;
   String? employee;
   String? user;
+  String? status;
 
   AddVisitModel(
       {this.name,
@@ -46,7 +47,8 @@ class AddVisitModel {
       this.visitOutAddress,
       this.visitOutTime,
       this.employee,
-      this.user});
+      this.user,
+        this.status,});
 
   AddVisitModel.fromJson(Map<String, dynamic> json) {
     name = json['name'];
@@ -72,6 +74,7 @@ class AddVisitModel {
     visitOutTime = json['visit_out_time'];
     employee = json['employee'];
     user = json['user'];
+    status = json['status'];
   }
 
   Map<String, dynamic> toJson() {
@@ -99,6 +102,7 @@ class AddVisitModel {
     data['visit_out_time'] = this.visitOutTime;
     data['employee'] = this.employee;
     data['user'] = this.user;
+    data['status'] = status;
     return data;
   }
 }

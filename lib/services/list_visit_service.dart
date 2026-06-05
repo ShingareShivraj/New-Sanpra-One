@@ -38,6 +38,7 @@ class ListVisitServices {
           responseType: ResponseType.json,
         ),
       );
+      print(response.data);
 
       if (response.statusCode != 200) {
         Fluttertoast.showToast(msg: "Unable to fetch visits");

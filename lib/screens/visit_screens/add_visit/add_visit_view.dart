@@ -30,9 +30,9 @@ class _AddVisitScreenState extends State<AddVisitScreen> {
               const Icon(Icons.location_on_outlined),
               const SizedBox(width: 8),
               Text(
-                model.isEdit
-                    ? (model.visitData.name ?? "Visit")
-                    : "Create Visit",
+                  model.isVisitInCompleted
+                      ? "Resume Visit"
+                      : "Create Visit",
                 style: const TextStyle(fontSize: 18),
               ),
             ],

@@ -26,6 +26,7 @@ class AddVisitViewModel extends BaseViewModel {
 
   String? visitType; // Customer or Lead
   String? selectedParty;
+  String? activeVisitId;
 
   bool isEdit = false;
   bool isVisitInCompleted = false;
@@ -96,12 +97,23 @@ class AddVisitViewModel extends BaseViewModel {
       allParties = await AddVisitServices().fetchCustomer();
 
       if (visitId.isNotEmpty) {
+
         isEdit = true;
+
         visitData =
-            await AddVisitServices().getVisit(visitId) ?? AddVisitModel();
-        descriptionController.text = visitData.description ?? '';
+            await AddVisitServices().getVisit(visitId)
+                ?? AddVisitModel();
+
+        activeVisitId = visitData.name;
+
+        isVisitInCompleted = true;
+
+        descriptionController.text =
+            visitData.description ?? '';
+
         visitType = visitData.visitTo;
         selectedParty = visitData.visitor;
+
         _filterParties();
       }
     } finally {
@@ -332,10 +344,26 @@ class AddVisitViewModel extends BaseViewModel {
       ..visitInLongitude = lng.toString()
       ..visitInAddress = null; // skipped
 
-    isVisitInCompleted = true;
-    currentStep = 1;
+    final res =
+    await AddVisitServices().addVisit(
+      visitData,
+      null,
+    );
 
-    Fluttertoast.showToast(msg: "Visit In Started. ✓");
+    if (res["success"] == true) {
+
+      activeVisitId = res["visitId"];
+
+      isVisitInCompleted = true;
+
+      currentStep = 1;
+
+      Fluttertoast.showToast(
+        msg: "Visit In Started. ✓",
+      );
+
+      notifyListeners();
+    }
     notifyListeners();
   }
 
@@ -357,17 +385,29 @@ class AddVisitViewModel extends BaseViewModel {
     isVisitOutCompleted = true;
     notifyListeners();
 
-    final res = await AddVisitServices().addVisit(
+    visitData.name = activeVisitId;
+
+    final res =
+    await AddVisitServices().addVisit(
       visitData,
       outImage,
       onProgress: (sent, total) {
         if (total <= 0) return;
+
         uploadProgress = sent / total;
+
         notifyListeners();
       },
-    ).timeout(const Duration(seconds: 30));
+    );
 
-    if (res && context.mounted) Navigator.pop(context);
+    if (res["success"] == true) {
+
+      activeVisitId = null;
+
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+    }
   }
 
   @override

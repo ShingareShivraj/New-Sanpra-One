@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
           return DistributorHomePage();
         }
         // If NOT checked in -> show full-screen lock page
-        if (!model.isCheckedIn) {
+        if (!model.isCheckedIn && !model.skipCheckInScreen) {
           return CheckInLockScreen(model: model);
         }
 
@@ -578,8 +578,6 @@ class _HomePageState extends State<HomePage> {
             //   ],
             // ),
 
-
-          const SizedBox(height: 24),
 
           // ---------------------------------------------------------
           // If NO Territory → Show Friendly Message, Hide Dashboard
@@ -1483,6 +1481,38 @@ class _CheckInLockScreenState extends State<CheckInLockScreen> {
                   processing: _processing,
                   text: "Slide to Check-In 🌟",
                   onConfirm: () => _handleCheckIn(context),
+                ),
+              ),
+
+
+              const SizedBox(height: 30),
+
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    widget.model.skipCheckInScreen = true;
+                    widget.model.notifyListeners();
+                  },
+                  icon: const Icon(Icons.dashboard_outlined),
+                  label: const Text(
+                    "Go To Dashboard",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    side: const BorderSide(
+                      color: Colors.white,
+                      width: 1.5,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
                 ),
               ),
             ],

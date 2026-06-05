@@ -30,7 +30,7 @@ class AddVisitServices {
   Future<String> _getToken() async => await getTocken();
 
   // =================== ADD VISIT ===================
-  Future<bool> addVisit(
+  Future<Map<String, dynamic>> addVisit(
     AddVisitModel visit,
     File? image, {
     void Function(int sent, int total)? onProgress,
@@ -69,6 +69,8 @@ class AddVisitServices {
 
       // ✅ Frappe can return 200 with error info in body
       final data = response.data;
+      print("ADD VISIT RESPONSE");
+      print(data);
       if (response.statusCode == 200) {
         if (data is Map<String, dynamic> && data["exc"] != null) {
           Fluttertoast.showToast(
@@ -77,11 +79,19 @@ class AddVisitServices {
             textColor: const Color(0xFFFFFFFF),
             backgroundColor: const Color(0xFFBA1A1A),
           );
-          return false;
+          return {
+            "success": false,
+          };
         }
 
-        Fluttertoast.showToast(msg: "Visit added successfully");
-        return true;
+        final responseData =
+            data["data"] ?? {};
+
+        return {
+          "success": true,
+          "visitId": responseData["name"],
+          "status": responseData["status"],
+        };
       }
 
       Fluttertoast.showToast(
@@ -90,7 +100,9 @@ class AddVisitServices {
         textColor: const Color(0xFFFFFFFF),
         backgroundColor: const Color(0xFFBA1A1A),
       );
-      return false;
+      return {
+        "success": false,
+      };
     } on TimeoutException {
       Fluttertoast.showToast(
         msg: "Request timed out. Please try again.",
@@ -98,7 +110,9 @@ class AddVisitServices {
         textColor: const Color(0xFFFFFFFF),
         backgroundColor: const Color(0xFFBA1A1A),
       );
-      return false;
+      return {
+        "success": false,
+      };
     } on DioException catch (e) {
       final msg = _extractFrappeError(e) ?? e.message ?? "Something went wrong";
 
@@ -110,7 +124,9 @@ class AddVisitServices {
       );
 
       Logger().e(e.response?.data ?? e);
-      return false;
+      return {
+        "success": false,
+      };
     } catch (e) {
       Fluttertoast.showToast(
         msg: "Something went wrong",
@@ -119,7 +135,9 @@ class AddVisitServices {
         backgroundColor: const Color(0xFFBA1A1A),
       );
       Logger().e(e);
-      return false;
+      return {
+        "success": false,
+      };
     }
   }
 
@@ -157,6 +175,33 @@ class AddVisitServices {
         backgroundColor: const Color(0xFFBA1A1A),
       );
       Logger().e(e.response?.data ?? e);
+    }
+
+    return null;
+  }
+
+
+  Future<AddVisitModel?> getActiveVisit() async {
+    final baseUrl = await _getBaseUrl();
+
+    try {
+      final response = await _dio.get(
+        '$baseUrl/api/method/mobile.mobile_env.visit.get_active_visit',
+        options: Options(
+          headers: {
+            'Authorization': await _getToken(),
+          },
+        ),
+      );
+
+      if (response.statusCode == 200 &&
+          response.data["data"] != null) {
+        return AddVisitModel.fromJson(
+          response.data["data"],
+        );
+      }
+    } catch (e) {
+      Logger().e(e);
     }
 
     return null;
