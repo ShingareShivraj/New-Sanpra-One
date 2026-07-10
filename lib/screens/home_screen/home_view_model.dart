@@ -93,11 +93,11 @@ class HomeViewModel extends BaseViewModel {
 
       _commit(() {
         _dashboard = results[0] as DashBoard?;
-        print("========== DASHBOARD FLAGS ==========");
-        print("isMeter    : ${_dashboard?.isMeter}");
-        print("isPhoto    : ${_dashboard?.isPhoto}");
-        print("isLocation : ${_dashboard?.isLocation}");
-        print("=====================================");
+        // print("========== DASHBOARD FLAGS ==========");
+        // print("isMeter    : ${_dashboard?.isMeter}");
+        // print("isPhoto    : ${_dashboard?.isPhoto}");
+        // print("isLocation : ${_dashboard?.isLocation}");
+        // print("=====================================");
         employeeData = results[1] as EmpData?;
         availableDocTypes =
             (results[2] as List).map((e) => e.toString()).toList();
@@ -276,7 +276,7 @@ class HomeViewModel extends BaseViewModel {
 
           finalPhoto = File(compressed?.path ?? photoFile.path);
         } catch (e) {
-          print("Compression failed: $e");
+          // print("Compression failed: $e");
           finalPhoto = photoFile; // fallback ✅
         }
       }
@@ -304,8 +304,8 @@ class HomeViewModel extends BaseViewModel {
         await prefs.setBool("is_checked_in", true);
 
         await initializeService(); // 🔥 START SERVICE
-
-        print("✅ CHECK-IN → Tracking Started");
+        //
+        // print("✅ CHECK-IN → Tracking Started");
       } else {
         // ❌ CHECK-OUT → stop tracking
         await prefs.setBool("is_checked_in", false);
@@ -313,7 +313,7 @@ class HomeViewModel extends BaseViewModel {
         final service = FlutterBackgroundService();
         service.invoke("stopService");
 
-        print("❌ CHECK-OUT → Tracking Stopped");
+        // print("❌ CHECK-OUT → Tracking Stopped");
       }
 
       _commit(() {

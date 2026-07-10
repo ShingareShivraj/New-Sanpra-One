@@ -79,6 +79,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget dashboardPage(BuildContext context, HomeViewModel model) {
+    final bool hasDashboardPermission =
+    model.isFormAvailableForDocType("Dashboard");
     return RefreshIndicator(
       onRefresh: () => model.onRefresh(),
       child: SingleChildScrollView(
@@ -156,6 +158,7 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
               // Profile button
+            if (model.isFormAvailableForDocType("Employee"))
               Tooltip(
                 message: 'Profile',
                 child: InkResponse(
@@ -275,9 +278,9 @@ class _HomePageState extends State<HomePage> {
 
                           // 👉 TRACKING ON → FULL FLOW
                           // 1️⃣ Meter Reading
-                          print("UI isMeter = ${model.dashboard.isMeter}");
-                          print("UI isPhoto = ${model.dashboard.isPhoto}");
-                          print("UI isLocation = ${model.dashboard.isLocation}");
+                          // print("UI isMeter = ${model.dashboard.isMeter}");
+                          // print("UI isPhoto = ${model.dashboard.isPhoto}");
+                          // print("UI isLocation = ${model.dashboard.isLocation}");
                           if (model.dashboard.isMeter == true) {
                             meterReading = await Navigator.push<String>(
                               context,
@@ -333,9 +336,9 @@ class _HomePageState extends State<HomePage> {
                           // 👉 TRACKING ON → FULL FLOW
                           // if (isTrackingEnabled) {
                             // 1️⃣ Meter Reading
-                          print("UI isMeter = ${model.dashboard.isMeter}");
-                          print("UI isPhoto = ${model.dashboard.isPhoto}");
-                          print("UI isLocation = ${model.dashboard.isLocation}");
+                          // print("UI isMeter = ${model.dashboard.isMeter}");
+                          // print("UI isPhoto = ${model.dashboard.isPhoto}");
+                          // print("UI isLocation = ${model.dashboard.isLocation}");
                             if (model.dashboard.isMeter == true) {
                               meterReading = await Navigator.push<String>(
                                 context,
@@ -752,6 +755,7 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 16),
 
             // Sales Dashboard
+          if (hasDashboardPermission) ...[
             const Text(
               "Visit & Tour Dashboard",
               style: TextStyle(
@@ -760,6 +764,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 16),
+
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -774,25 +779,37 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
               child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text(
-                          "The Visit & Tour",
-                          style: TextStyle(color: Colors.grey, fontSize: 14),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text(
+                        "The Visit & Tour",
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
                         ),
-                        Icon(Iconsax.trend_up, color: Colors.green, size: 18),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    weeklySummary(model.weekData),
-                    const SizedBox(height: 16),
-                    weeklyBarChart(model.weekData),
-                  ]),
+                      ),
+                      Icon(
+                        Iconsax.trend_up,
+                        color: Colors.green,
+                        size: 18,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  weeklySummary(model.weekData),
+                  const SizedBox(height: 16),
+                  weeklyBarChart(model.weekData),
+                ],
+              ),
             ),
+
             const SizedBox(height: 24),
+          ],
+          const SizedBox(height: 24),
+
 
             /// ===== MONTH SUMMARY =====
             Text(
@@ -803,67 +820,67 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 12),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: 6,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 1.4, // 🔥 gives enough height
-              ),
-              itemBuilder: (context, index) {
-                final summaries = [
-                  {
-                    "title": "Visits",
-                    "value":
-                        model.monthlySummary.visit?.total.toString() ?? "0",
-                    "icon": Icons.location_on,
-                    "color": Colors.blue,
-                  },
-                  {
-                    "title": "Attendance",
-                    "value": model.monthlySummary.attendance?.total ?? 0,
-                    "icon": Icons.how_to_reg,
-                    "color": Colors.green,
-                  },
-                  {
-                    "title": "Leaves",
-                    "value": model.monthlySummary.leave?.total ?? 0,
-                    "icon": Icons.beach_access,
-                    "color": Colors.orange,
-                  },
-                  {
-                    "title": "Orders",
-                    "value": model.monthlySummary.orders?.total ?? 0,
-                    "icon": Icons.shopping_cart,
-                    "color": Colors.purple,
-                  },
-                  {
-                    "title": "Leads",
-                    "value":
-                        model.monthlySummary.leads?.total.toString() ?? "0",
-                    "icon": Icons.leaderboard,
-                    "color": Colors.redAccent,
-                  },
-                  {
-                    "title": "Tours",
-                    "value":
-                        model.monthlySummary.tours?.total.toString() ?? "0",
-                    "icon": Icons.location_on_outlined,
-                    "color": Colors.orangeAccent,
-                  }
-                ];
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
 
-                final summary = summaries[index];
+            itemCount: hasDashboardPermission ? 6 : 2,
 
-                return MonthSummary(
-                  title: summary["title"]?.toString() ?? "",
-                  value: int.tryParse(summary["value"].toString()) ?? 0,
-                );
-              },
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.4,
             ),
+
+            itemBuilder: (context, index) {
+
+              final summaries = hasDashboardPermission
+                  ? [
+                {
+                  "title": "Visits",
+                  "value": model.monthlySummary.visit?.total.toString() ?? "0",
+                },
+                {
+                  "title": "Attendance",
+                  "value": model.monthlySummary.attendance?.total ?? 0,
+                },
+                {
+                  "title": "Leaves",
+                  "value": model.monthlySummary.leave?.total ?? 0,
+                },
+                {
+                  "title": "Orders",
+                  "value": model.monthlySummary.orders?.total ?? 0,
+                },
+                {
+                  "title": "Leads",
+                  "value": model.monthlySummary.leads?.total.toString() ?? "0",
+                },
+                {
+                  "title": "Tours",
+                  "value": model.monthlySummary.tours?.total.toString() ?? "0",
+                },
+              ]
+                  : [
+                {
+                  "title": "Attendance",
+                  "value": model.monthlySummary.attendance?.total ?? 0,
+                },
+                {
+                  "title": "Leaves",
+                  "value": model.monthlySummary.leave?.total ?? 0,
+                },
+              ];
+
+              final summary = summaries[index];
+
+              return MonthSummary(
+                title: summary["title"].toString(),
+                value: int.tryParse(summary["value"].toString()) ?? 0,
+              );
+            },
+          ),
 
         ]),
       ),
@@ -1147,7 +1164,12 @@ class _QuickActionGridState extends State<QuickActionGrid>
       //     "icon": Iconsax.box,
       //     "route": Routes.listDeliveryNoteScreen
       //   },
-      {"label": "Visit", "icon": Iconsax.location, "route": Routes.visitScreen},
+      if (widget.model.isFormAvailableForDocType("Visit"))
+        {
+          "label": "Visit",
+          "icon": Iconsax.location,
+          "route": Routes.visitScreen,
+        },
     ];
 
     // HR
@@ -1206,8 +1228,18 @@ class _QuickActionGridState extends State<QuickActionGrid>
           "icon": Iconsax.shopping_cart,
           "screen": MarketingListScreen()
         },
-      {"label": "Tours", "icon": Iconsax.calendar, "screen": ListTourScreen()},
-      {"label": "Reports", "icon": Iconsax.receipt, "screen": ReportsPage()},
+      if (widget.model.isFormAvailableForDocType("Tours"))
+        {
+          "label": "Tours",
+          "icon": Iconsax.calendar,
+          "screen": ListTourScreen(),
+        },
+      if (widget.model.isFormAvailableForDocType("Reports"))
+        {
+          "label": "Reports",
+          "icon": Iconsax.receipt,
+          "screen": ReportsPage(),
+        },
     ];
 
     sections = {
@@ -1609,7 +1641,7 @@ class _CheckInLockScreenState extends State<CheckInLockScreen> {
         meterReading: meterReading,
         position: position,
       );
-      print("CHECKIN SUCCESS: $success");
+      // print("CHECKIN SUCCESS: $success");
 
       if (!mounted) return;
 

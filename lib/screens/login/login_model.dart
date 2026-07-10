@@ -81,13 +81,13 @@ class LoginViewModel extends BaseViewModel {
         String? fcmToken = await NotificationService.getFCMToken();
 
         /// 🔥 DEBUG
-        print("========== FCM DEBUG ==========");
-        print("FCM TOKEN GENERATED: $fcmToken");
-        print("ANDROID ID: $androidId");
+        // print("========== FCM DEBUG ==========");
+        // print("FCM TOKEN GENERATED: $fcmToken");
+        // print("ANDROID ID: $androidId");
 
         /// ❌ STOP if token is null
         if (fcmToken == null) {
-          print("❌ TOKEN IS NULL - NOT SENDING TO BACKEND");
+          // print("❌ TOKEN IS NULL - NOT SENDING TO BACKEND");
           return;
         }
 

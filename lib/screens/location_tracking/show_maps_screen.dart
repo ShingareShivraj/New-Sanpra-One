@@ -98,10 +98,10 @@ class _MapsScreenState extends State<ShowMapsScreen> {
         });
       } else {
         // Handle other status codes if needed
-        print('Failed to fetch locations');
+        // print('Failed to fetch locations');
       }
     } catch (e) {
-      print('Error while fetching locations: $e');
+      // print('Error while fetching locations: $e');
       // Handle error
     }
   }

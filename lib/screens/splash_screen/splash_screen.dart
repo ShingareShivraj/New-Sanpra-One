@@ -235,15 +235,21 @@ class _SplashScreenState extends State<SplashScreen>
     if (!ok) return;
     await _performAsyncOperations();
 
-    final dashboard = await HomeServices().dashboard();
+    await _performAsyncOperations();
 
-    if (dashboard != null) {
-      Provider.of<AppState>(context, listen: false)
-          .setTracking(dashboard.trackingEnabled ?? false);
+    if (_isLoggedIn) {
+      final dashboard = await HomeServices().dashboard();
 
-      print("Tracking Enabled: ${dashboard.trackingEnabled}");
+      if (dashboard != null) {
+        Provider.of<AppState>(context, listen: false)
+            .setTracking(dashboard.trackingEnabled ?? false);
+
+        print("Tracking Enabled: ${dashboard.trackingEnabled}");
+      }
     }
+
     if (!mounted) return;
+
     if (_isLoggedIn) {
       Navigator.popAndPushNamed(context, Routes.homePage);
     } else {

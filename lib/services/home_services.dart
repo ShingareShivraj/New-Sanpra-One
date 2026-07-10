@@ -17,6 +17,7 @@ class HomeServices {
 
   Future<DashBoard?> dashboard() async {
     try {
+
       final url =
           '${await geturl()}/api/method/mobile.mobile_env.app.get_dashboard';
       final response = await _dio.get(
