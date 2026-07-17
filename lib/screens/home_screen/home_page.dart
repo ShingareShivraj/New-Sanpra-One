@@ -260,6 +260,19 @@ class _HomePageState extends State<HomePage> {
                         File? photoFile;
                         Position? position;
 
+                        try {
+                          const settings = LocationSettings(
+                            accuracy: LocationAccuracy.high,
+                          );
+
+                          await Geolocator.getCurrentPosition(
+                            locationSettings: settings,
+                          );
+                        } catch (e) {
+                          _showError(context, "Unable to get current location");
+                          return;
+                        }
+
                         // =========================
                         // 🔴 DAY-OUT LOGIC
                         // =========================
@@ -317,7 +330,10 @@ class _HomePageState extends State<HomePage> {
                               context,
                               MaterialPageRoute(
                                 fullscreenDialog: true,
-                                builder: (_) => LocationScreen(type: nextType),
+                                builder: (_) => LocationScreen(
+                                  type: nextType,
+                                  initialPosition: position,
+                                ),
                               ),
                             );
 
@@ -372,7 +388,10 @@ class _HomePageState extends State<HomePage> {
                                 context,
                                 MaterialPageRoute(
                                   fullscreenDialog: true,
-                                  builder: (_) => LocationScreen(type: nextType),
+                                  builder: (_) => LocationScreen(
+                                    type: nextType,
+                                    initialPosition: position,
+                                  ),
                                 ),
                               );
 
@@ -1573,6 +1592,25 @@ class _CheckInLockScreenState extends State<CheckInLockScreen> {
       File? photoFile;
       Position? position;
 
+
+      // Always fetch GPS once
+      try {
+        const settings = LocationSettings(
+          accuracy: LocationAccuracy.high,
+        );
+
+        await Geolocator.getCurrentPosition(
+          locationSettings: settings,
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Unable to get current location"),
+          ),
+        );
+        return;
+      }
+
       // =========================
       // ✅ IF TRACKING ENABLED
       // =========================
@@ -1606,24 +1644,25 @@ class _CheckInLockScreenState extends State<CheckInLockScreen> {
           photoFile = File(photoPath);
         }
         // 3️⃣ Location
-        if (widget.model.dashboard.isLocation == true) {
-          position = await Navigator.push<Position>(
-            context,
-            MaterialPageRoute(
-              fullscreenDialog: true,
-              builder: (_) => LocationScreen(type: nextType),
+      if (widget.model.dashboard.isLocation == true) {
+        position = await Navigator.push<Position>(
+          context,
+          MaterialPageRoute(
+            fullscreenDialog: true,
+            builder: (_) => LocationScreen(
+              type: nextType,
+              initialPosition: position,   // <-- pass existing position
             ),
-          );
+          ),
+        );
 
-          if (!mounted || position == null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Location access failed"),
-              ),
-            );
-            return;
-          }
+        if (!mounted || position == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Location access failed")),
+          );
+          return;
         }
+      }
 
 
       // =========================
@@ -2922,9 +2961,14 @@ class _CurrentLocationMapCardState extends State<CurrentLocationMapCard> {
       // NOTE: Get a fresh fix; keep last known if this times out.
       Position? first;
       try {
-        first = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.medium,
-          timeLimit: const Duration(seconds: 8),
+
+
+        const settings = LocationSettings(
+          accuracy: LocationAccuracy.high,
+        );
+
+        await Geolocator.getCurrentPosition(
+          locationSettings: settings,
         );
       } catch (_) {
         if (lastKnown == null) {
