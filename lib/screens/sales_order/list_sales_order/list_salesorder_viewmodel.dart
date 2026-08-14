@@ -6,11 +6,15 @@ import 'package:stacked/stacked.dart';
 import '../../../model/order_list_model.dart';
 import '../../../router.router.dart';
 import '../../../services/order_services.dart';
+import '../../../services/home_services.dart';
 
 class ListOrderModel extends BaseViewModel {
   final _orderService = OrderServices();
   final _addOrderService = AddOrderServices();
   final customerController = TextEditingController();
+  final _homeService = HomeServices();
+
+  List<String> availableDocTypes = [];
 
   List<OrderList> _orderList = []; // full list
   List<OrderList> _filteredOrderList = [];
@@ -44,19 +48,34 @@ class ListOrderModel extends BaseViewModel {
   /// Initial fetch
   Future<void> initialise(BuildContext context) async {
     setBusy(true);
+
     try {
-      final fetchedOrders = await _orderService.fetchSalesOrder();
-      // final customers = await _addOrderService.fetchCustomer();
+      final results = await Future.wait([
+        _orderService.fetchSalesOrder(),
+        _homeService.fetchRoles(),
+      ]);
+
+      final fetchedOrders = results[0] as List<OrderList>;
 
       _orderList = List.from(fetchedOrders);
       _filteredOrderList = List.from(fetchedOrders);
-      // _searchCustomerList = customers;
+
+      availableDocTypes =
+          (results[1] as List).map((e) => e.toString()).toList();
+      print("========== AVAILABLE ROLES ==========");
+      print(availableDocTypes);
+      print("UOM ROLE = ${isFormAvailableForDocType("Mobile Sales Order UOM")}");
+      print("====================================");
+
     } catch (e) {
       debugPrint('Error in initialise: $e');
     }
+
     setBusy(false);
   }
-
+  bool isFormAvailableForDocType(String docType) {
+    return availableDocTypes.contains(docType);
+  }
   @override
   void dispose() {
     customerController.dispose();

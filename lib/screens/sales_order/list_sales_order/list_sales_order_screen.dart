@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocation/model/order_list_model.dart';
 import 'package:geolocation/widgets/full_screen_loader.dart';
 import 'package:stacked/stacked.dart';
-
+import '../../sales_order_uom/sales_order_uom_screen.dart';
 import '../../../router.router.dart';
 import 'list_salesorder_viewmodel.dart';
 
@@ -180,13 +180,36 @@ class ListOrderScreen extends StatelessWidget {
         ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () async {
+
+            // User has Mobile Sales Order UOM
+            if (model.isFormAvailableForDocType(
+                "Mobile Sales Order UOM")) {
+
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const SalesOrderUomScreen(),
+                ),
+              );
+
+              if (result == true) {
+                await model.refresh();
+              }
+
+              return;
+            }
+
+            // Normal Sales Order user
             final result = await Navigator.pushNamed(
               context,
               Routes.addOrderScreen,
-              arguments: const AddOrderScreenArguments(orderid: ""),
+              arguments: const AddOrderScreenArguments(
+                orderid: "",
+              ),
             );
+
             if (result == true) {
-              model.refresh();
+              await model.refresh();
             }
           },
           icon: const Icon(Icons.add),

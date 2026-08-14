@@ -32,6 +32,7 @@ import 'package:geolocation/screens/visit_screens/update_visit/update_visit_view
 import 'package:geolocation/screens/visit_screens/visit_List/visit_list_screen.dart';
 import 'package:stacked/stacked_annotations.dart';
 import 'package:stacked_services/stacked_services.dart';
+import 'package:geolocation/screens/sales_order_uom/sales_order_uom_screen.dart';
 
 import 'screens/delivery_note_list.dart';
 import 'screens/lead_screen/lead_list/lead_screen.dart';
@@ -47,6 +48,7 @@ import 'screens/retailer_registration/add_retailer/add_retailer_screen.dart';
     MaterialRoute(page: LocationTracker),
     MaterialRoute(page: ListOrderScreen),
     MaterialRoute(page: AddOrderScreen),
+    MaterialRoute(page: SalesOrderUomScreen),
     MaterialRoute(page: ListDistributorOrderScreen),
     MaterialRoute(page: AddDistributorOrderScreen),
     MaterialRoute(page: ItemScreen),

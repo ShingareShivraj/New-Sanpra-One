@@ -1175,7 +1175,8 @@ class _QuickActionGridState extends State<QuickActionGrid>
         {
           "label": "Sales Order",
           "icon": Iconsax.shopping_cart,
-          "route": Routes.listOrderScreen
+          "route": Routes.listOrderScreen,
+          "isSalesOrder": true,
         },
       // if (widget.model.isFormAvailableForDocType("Delivery Note"))
       //   {
