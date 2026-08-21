@@ -1171,12 +1171,17 @@ class _QuickActionGridState extends State<QuickActionGrid>
           "icon": Iconsax.shopping_cart,
           "route": Routes.listQuotationScreen
         },
-      if (widget.model.isFormAvailableForDocType("Sales Order"))
+      if (widget.model.isFormAvailableForDocType("Mobile Sales Order") ||
+          widget.model.isFormAvailableForDocType("Mobile Sales Order UOM"))
         {
           "label": "Sales Order",
           "icon": Iconsax.shopping_cart,
-          "route": Routes.listOrderScreen,
-          "isSalesOrder": true,
+          "onTap": () {
+            Navigator.pushNamed(
+              context,
+              Routes.listOrderScreen, // your Sales Order LIST screen route
+            );
+          },
         },
       // if (widget.model.isFormAvailableForDocType("Delivery Note"))
       //   {
@@ -1382,11 +1387,35 @@ class _QuickActionGridState extends State<QuickActionGrid>
   Widget _buildActionButton(Map<String, dynamic> item) {
     return GestureDetector(
       onTap: () {
+        // ================================
+// CUSTOM onTap
+// ================================
+        if (item["onTap"] != null) {
+          item["onTap"]();
+          return;
+        }
+
+// ================================
+// ROUTE
+// ================================
         if (item["route"] != null) {
-          Navigator.pushNamed(context, item["route"]);
-        } else {
+          Navigator.pushNamed(
+            context,
+            item["route"],
+          );
+          return;
+        }
+
+// ================================
+// SCREEN
+// ================================
+        if (item["screen"] != null) {
           Navigator.push(
-              context, MaterialPageRoute(builder: (_) => item["screen"]));
+            context,
+            MaterialPageRoute(
+              builder: (_) => item["screen"],
+            ),
+          );
         }
       },
       child: Column(

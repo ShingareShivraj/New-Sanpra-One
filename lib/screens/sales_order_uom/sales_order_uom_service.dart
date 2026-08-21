@@ -82,7 +82,6 @@ class SalesOrderUomService {
   // ============================================================
   Future<String> createOrder({
     required String customer,
-    required String distributor,
     required String deliveryDate,
     required List<UomOrderItem> items,
   }) async {
@@ -90,24 +89,23 @@ class SalesOrderUomService {
 
     final payload = {
       "customer": customer,
-      "set_warehouse": distributor,
       "delivery_date": deliveryDate,
       "items": items.map((orderItem) {
         return {
           "item_code": orderItem.item.itemCode,
           "item_name": orderItem.item.itemName,
           "qty": orderItem.quantity,
-          "uom": orderItem.selectedUom?.uom,
+          "uom": orderItem.selectedUom?.uom ?? orderItem.item.stockUom,
           "stock_uom": orderItem.item.stockUom,
           "conversion_factor":
           orderItem.selectedUom?.conversionFactor ?? 1,
-          "warehouse": distributor,
         };
       }).toList(),
     };
 
-    print("UOM SALES ORDER PAYLOAD:");
+    print("========== UOM SALES ORDER PAYLOAD ==========");
     print(jsonEncode(payload));
+    print("==============================================");
 
     try {
       final response = await _dio.post(
@@ -120,6 +118,10 @@ class SalesOrderUomService {
           },
         ),
       );
+
+      print("========== UOM ORDER RESPONSE ==========");
+      print(response.data);
+      print("=========================================");
 
       Fluttertoast.showToast(
         msg: response.data['message']?.toString() ??
@@ -135,9 +137,19 @@ class SalesOrderUomService {
       print("HEADERS: ${e.response?.headers}");
       print("============================================");
 
+      Fluttertoast.showToast(
+        msg: e.response?.data?['message']?.toString() ??
+            "Failed to create order",
+      );
+
       return "";
     } catch (e) {
       print("Create UOM order error: $e");
+
+      Fluttertoast.showToast(
+        msg: "Failed to create order",
+      );
+
       return "";
     }
   }

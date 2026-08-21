@@ -11,11 +11,9 @@ class SalesOrderUomViewModel extends BaseViewModel {
   final formKey = GlobalKey<FormState>();
 
   List<String> customers = [];
-  List<String> distributors = [];
   List<UomItem> items = [];
 
   String? selectedCustomer;
-  String? selectedDistributor;
 
   DateTime selectedDate = DateTime.now();
 
@@ -29,17 +27,14 @@ class SalesOrderUomViewModel extends BaseViewModel {
 
       if (masters != null) {
         customers = masters.customers ?? [];
-        distributors = masters.warehouses ?? [];
       }
 
       items = await _service.fetchUomItems();
 
       print("========== UOM FORM DATA ==========");
       print("Customers: ${customers.length}");
-      print("Distributors: ${distributors.length}");
       print("Items: ${items.length}");
       print("===================================");
-
     } catch (e) {
       print("UOM initialise error: $e");
 
@@ -54,11 +49,14 @@ class SalesOrderUomViewModel extends BaseViewModel {
     selectedCustomer = value;
     notifyListeners();
   }
+  void setSelectedItems(List<UomOrderItem> items) {
+    selectedItems
+      ..clear()
+      ..addAll(items);
 
-  void setDistributor(String? value) {
-    selectedDistributor = value;
     notifyListeners();
   }
+
 
   void setUom(
       int index,
@@ -149,13 +147,7 @@ class SalesOrderUomViewModel extends BaseViewModel {
       return false;
     }
 
-    if (selectedDistributor == null ||
-        selectedDistributor!.isEmpty) {
-      Fluttertoast.showToast(
-        msg: "Please select distributor",
-      );
-      return false;
-    }
+
 
     if (selectedItems.isEmpty) {
       Fluttertoast.showToast(
@@ -185,7 +177,6 @@ class SalesOrderUomViewModel extends BaseViewModel {
     try {
       final orderName = await _service.createOrder(
         customer: selectedCustomer!,
-        distributor: selectedDistributor!,
         deliveryDate: formattedDate,
         items: selectedItems,
       );

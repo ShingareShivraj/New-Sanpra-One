@@ -59,4 +59,12 @@ class UomOrderItem {
     this.selectedUom,
     this.quantity = 1,
   });
+
+  String get displayUom {
+    return selectedUom?.uom ?? item.stockUom;
+  }
+
+  double get conversionFactor {
+    return selectedUom?.conversionFactor ?? 1;
+  }
 }

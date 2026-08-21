@@ -74,6 +74,10 @@ class ListOrderModel extends BaseViewModel {
     setBusy(false);
   }
   bool isFormAvailableForDocType(String docType) {
+    if (docType == "Mobile Sales Order") {
+      return availableDocTypes.contains("Sales Order");
+    }
+
     return availableDocTypes.contains(docType);
   }
   @override

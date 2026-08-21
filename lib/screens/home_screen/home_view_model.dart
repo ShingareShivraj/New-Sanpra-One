@@ -176,8 +176,13 @@ class HomeViewModel extends BaseViewModel {
     }).toList();
   }
 
-  bool isFormAvailableForDocType(String docType) =>
-      availableDocTypes.contains(docType);
+  bool isFormAvailableForDocType(String docType) {
+    if (docType == "Mobile Sales Order") {
+      return availableDocTypes.contains("Sales Order");
+    }
+
+    return availableDocTypes.contains(docType);
+  }
   // ───────────────────────────────────────── SPEND HOURS ─────────────────────────────────────────
   String get spendHours {
     if (_cachedSpendHours != null) return _cachedSpendHours!;

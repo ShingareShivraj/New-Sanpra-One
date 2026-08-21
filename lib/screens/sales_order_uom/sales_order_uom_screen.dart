@@ -1,12 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocation/screens/sales_order_uom/sales_order_uom_item_screen.dart';
 import 'package:geolocation/widgets/full_screen_loader.dart';
 import 'package:stacked/stacked.dart';
 
 import '../../../constants.dart';
 import 'sales_order_uom_model.dart';
 import 'sales_order_uom_viewmodel.dart';
-
+import 'sales_order_uom_item_screen.dart';
 class SalesOrderUomScreen extends StatelessWidget {
   const SalesOrderUomScreen({super.key});
 
@@ -76,16 +77,6 @@ class _HeaderCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _DropdownField(
-            label: "Distributor",
-            icon: Icons.warehouse_outlined,
-            value: model.selectedDistributor,
-            items: model.distributors,
-            hint: "Select distributor",
-            onChanged: model.setDistributor,
-          ),
-
-          const SizedBox(height: 15),
 
           _DropdownField(
             label: "Customer",
@@ -137,9 +128,7 @@ class _ItemsSection extends StatelessWidget {
     required this.model,
   });
 
-  Future<void> _showItemSelector(
-      BuildContext context,
-      ) async {
+  Future<void> _showItemSelector(BuildContext context) async {
     final availableItems = model.items
         .where(
           (item) => !model.selectedItems.any(
@@ -158,23 +147,18 @@ class _ItemsSection extends StatelessWidget {
       return;
     }
 
-    final selected = await showModalBottomSheet<UomItem>(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          top: Radius.circular(22),
+    final result = await Navigator.push<List<UomOrderItem>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SalesOrderUomItemScreen(
+          items: availableItems,
+          selectedItems: model.selectedItems,
         ),
       ),
-      builder: (context) {
-        return _ItemPicker(
-          items: availableItems,
-        );
-      },
     );
 
-    if (selected != null) {
-      model.addItem(selected);
+    if (result != null) {
+      model.setSelectedItems(result);
     }
   }
 
@@ -437,83 +421,83 @@ class _ItemImage extends StatelessWidget {
 // ITEM PICKER
 // -----------------------------------------------------------------------------
 
-class _ItemPicker extends StatelessWidget {
-  final List<UomItem> items;
-
-  const _ItemPicker({
-    required this.items,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.75,
-        child: Column(
-          children: [
-            const SizedBox(height: 12),
-
-            Container(
-              width: 45,
-              height: 5,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            const Text(
-              "Select Item",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            Expanded(
-              child: ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: items.length,
-                separatorBuilder: (_, __) =>
-                const SizedBox(height: 8),
-                itemBuilder: (context, index) {
-                  final item = items[index];
-
-                  return ListTile(
-                    onTap: () => Navigator.pop(
-                      context,
-                      item,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    tileColor: Colors.grey.shade50,
-                    leading: _ItemImage(item: item),
-                    title: Text(
-                      item.itemName,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    subtitle: Text(item.itemCode),
-                    trailing: const Icon(
-                      Icons.arrow_forward_ios,
-                      size: 16,
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+// class _ItemPicker extends StatelessWidget {
+//   final List<UomItem> items;
+//
+//   const _ItemPicker({
+//     required this.items,
+//   });
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return SafeArea(
+//       child: SizedBox(
+//         height: MediaQuery.of(context).size.height * 0.75,
+//         child: Column(
+//           children: [
+//             const SizedBox(height: 12),
+//
+//             Container(
+//               width: 45,
+//               height: 5,
+//               decoration: BoxDecoration(
+//                 color: Colors.grey.shade300,
+//                 borderRadius: BorderRadius.circular(10),
+//               ),
+//             ),
+//
+//             const SizedBox(height: 16),
+//
+//             const Text(
+//               "Select Item",
+//               style: TextStyle(
+//                 fontSize: 18,
+//                 fontWeight: FontWeight.w700,
+//               ),
+//             ),
+//
+//             const SizedBox(height: 12),
+//
+//             Expanded(
+//               child: ListView.separated(
+//                 padding: const EdgeInsets.all(16),
+//                 itemCount: items.length,
+//                 separatorBuilder: (_, __) =>
+//                 const SizedBox(height: 8),
+//                 itemBuilder: (context, index) {
+//                   final item = items[index];
+//
+//                   return ListTile(
+//                     onTap: () => Navigator.pop(
+//                       context,
+//                       item,
+//                     ),
+//                     shape: RoundedRectangleBorder(
+//                       borderRadius: BorderRadius.circular(14),
+//                     ),
+//                     tileColor: Colors.grey.shade50,
+//                     leading: _ItemImage(item: item),
+//                     title: Text(
+//                       item.itemName,
+//                       style: const TextStyle(
+//                         fontWeight: FontWeight.w600,
+//                       ),
+//                     ),
+//                     subtitle: Text(item.itemCode),
+//                     trailing: const Icon(
+//                       Icons.arrow_forward_ios,
+//                       size: 16,
+//                     ),
+//                   );
+//                 },
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 // -----------------------------------------------------------------------------
 // DROPDOWN
