@@ -114,6 +114,8 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                           const SizedBox(height: 8),
                           BillingSection(model: model),
                           const SizedBox(height: 25),
+                          OrderDescriptionField(model: model),
+                          const SizedBox(height: 25),
                           if (model.orderData.docstatus != 2)
                             ActionButtons(model: model),
                         ],
@@ -171,6 +173,58 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
 }
 
 // Individual smaller widget examples
+
+class OrderDescriptionField extends StatelessWidget {
+  final AddOrderViewModel model;
+
+  const OrderDescriptionField({
+    required this.model,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: model.termsController,
+      maxLines: 4,
+      minLines: 3,
+      textInputAction: TextInputAction.newline,
+      decoration: InputDecoration(
+        labelText: 'Description',
+        hintText: 'Add any important note for this order',
+        alignLabelWithHint: true,
+        prefixIcon: const Padding(
+          padding: EdgeInsets.only(
+            bottom: 55,
+          ),
+          child: Icon(
+            Icons.notes_outlined,
+          ),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(
+            color: Colors.grey,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(
+            color: Colors.blue,
+            width: 2,
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class CustomerDropdown extends StatelessWidget {
   final AddOrderViewModel model;

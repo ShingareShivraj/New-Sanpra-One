@@ -30,7 +30,7 @@ import '../stock_screen/stock_screen.dart';
 import '../tracking_screen/background_service.dart';
 import '../tracking_screen/track_person_page.dart';
 import '../sales_order/list_sales_order/list_sales_order_screen.dart';
-
+import '../sales_order_uom/list_sales_order_uom_screen.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -843,7 +843,10 @@ class _HomePageState extends State<HomePage> {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
 
-            itemCount: hasDashboardPermission ? 6 : 2,
+            itemCount: hasDashboardPermission
+                ? 6
+                : ((model.isFormAvailableForDocType("Attendance") ? 1 : 0) +
+                (model.isFormAvailableForDocType("Leave Application") ? 1 : 0)),
 
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
@@ -882,14 +885,16 @@ class _HomePageState extends State<HomePage> {
                 },
               ]
                   : [
-                {
-                  "title": "Attendance",
-                  "value": model.monthlySummary.attendance?.total ?? 0,
-                },
-                {
-                  "title": "Leaves",
-                  "value": model.monthlySummary.leave?.total ?? 0,
-                },
+                if (model.isFormAvailableForDocType("Attendance"))
+                  {
+                    "title": "Attendance",
+                    "value": model.monthlySummary.attendance?.total ?? 0,
+                  },
+                if (model.isFormAvailableForDocType("Leave Application"))
+                  {
+                    "title": "Leaves",
+                    "value": model.monthlySummary.leave?.total ?? 0,
+                  },
               ];
 
               final summary = summaries[index];
@@ -1171,15 +1176,30 @@ class _QuickActionGridState extends State<QuickActionGrid>
           "icon": Iconsax.shopping_cart,
           "route": Routes.listQuotationScreen
         },
-      if (widget.model.isFormAvailableForDocType("Mobile Sales Order") ||
-          widget.model.isFormAvailableForDocType("Mobile Sales Order UOM"))
+      // NORMAL SALES ORDER
+      if (widget.model.isFormAvailableForDocType("Mobile Sales Order"))
         {
           "label": "Sales Order",
           "icon": Iconsax.shopping_cart,
           "onTap": () {
             Navigator.pushNamed(
               context,
-              Routes.listOrderScreen, // your Sales Order LIST screen route
+              Routes.listOrderScreen,
+            );
+          },
+        },
+
+// SALES ORDER UOM
+      if (widget.model.isFormAvailableForDocType("Mobile Sales Order UOM"))
+        {
+          "label": "Sale_Order",
+          "icon": Iconsax.shopping_cart,
+          "onTap": () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const ListSalesOrderUomScreen(),
+              ),
             );
           },
         },

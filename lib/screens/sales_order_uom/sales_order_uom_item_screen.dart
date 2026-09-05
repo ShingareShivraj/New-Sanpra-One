@@ -467,10 +467,10 @@ class _UomItemCard extends StatelessWidget {
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 180),
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 6),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: isSelected
               ? theme.colorScheme.primary
@@ -480,145 +480,107 @@ class _UomItemCard extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(
-              isSelected ? 0.07 : 0.035,
+              isSelected ? 0.06 : 0.03,
             ),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            blurRadius: 7,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(9),
         child: Column(
           children: [
-            // ====================================================
-            // ITEM HEADER
-            // ====================================================
-
             Row(
-              crossAxisAlignment:
-              CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Item icon
                 Container(
-                  width: 52,
-                  height: 52,
+                  width: 42,
+                  height: 42,
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? theme.colorScheme.primary
-                        .withOpacity(0.10)
+                        ? theme.colorScheme.primary.withOpacity(0.10)
                         : const Color(0xFFF2F4F7),
-                    borderRadius:
-                    BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
                     Icons.inventory_2_outlined,
                     color: isSelected
                         ? theme.colorScheme.primary
                         : Colors.grey.shade600,
-                    size: 27,
+                    size: 22,
                   ),
                 ),
 
-                const SizedBox(width: 12),
+                const SizedBox(width: 9),
 
-                // Item information
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment:
-                    CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.itemName ?? '',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-
-                      const SizedBox(height: 5),
-
-                      Text(
-                        'Code: ${item.itemCode ?? ''}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    item.itemName ?? '',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
 
-                const SizedBox(width: 8),
+                const SizedBox(width: 4),
 
-                // Checkbox
                 InkWell(
                   borderRadius: BorderRadius.circular(30),
                   onTap: onToggle,
-                  child: Padding(
-                    padding: const EdgeInsets.all(2),
-                    child: Checkbox(
-                      value: isSelected,
-                      onChanged: (_) => onToggle(),
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                        BorderRadius.circular(5),
-                      ),
+                  child: Checkbox(
+                    value: isSelected,
+                    onChanged: (_) => onToggle(),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
                     ),
+                    visualDensity: VisualDensity.compact,
+                    materialTapTargetSize:
+                    MaterialTapTargetSize.shrinkWrap,
                   ),
                 ),
               ],
             ),
 
-            // ====================================================
-            // UOM + QUANTITY
-            // ====================================================
-
             if (isSelected) ...[
-              const SizedBox(height: 14),
-
+              const SizedBox(height: 6),
               const Divider(height: 1),
-
-              const SizedBox(height: 14),
+              const SizedBox(height: 6),
 
               Row(
-                crossAxisAlignment:
-                CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // UOM
                   Expanded(
                     flex: 3,
                     child: _FieldContainer(
-                      label: 'Unit of Measure',
+                      label: 'UOM',
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
-                          value: selectedOrderItem
-                              ?.selectedUom?.uom,
+                          value: selectedOrderItem?.selectedUom?.uom,
                           isExpanded: true,
                           icon: const Icon(
                             Icons.keyboard_arrow_down_rounded,
+                            size: 18,
                           ),
                           hint: const Text(
                             'Select UOM',
-                            style: TextStyle(
-                              fontSize: 14,
-                            ),
+                            style: TextStyle(fontSize: 12),
                           ),
                           items: item.uoms
                               .map(
-                                (uom) =>
-                                DropdownMenuItem<String>(
-                                  value: uom.uom,
-                                  child: Text(
-                                    uom.uom,
-                                    overflow:
-                                    TextOverflow.ellipsis,
-                                  ),
+                                (uom) => DropdownMenuItem<String>(
+                              value: uom.uom,
+                              child: Text(
+                                uom.uom,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 12,
                                 ),
+                              ),
+                            ),
                           )
                               .toList(),
                           onChanged: item.uoms.isEmpty
@@ -629,61 +591,32 @@ class _UomItemCard extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 7),
 
-                  // Quantity
                   Expanded(
                     flex: 2,
                     child: _FieldContainer(
-                      label: 'Quantity',
+                      label: 'QTY',
                       child: TextFormField(
                         initialValue:
-                        selectedOrderItem?.quantity
-                            .toString() ??
-                            '1',
+                        selectedOrderItem?.quantity.toString() ?? '1',
                         keyboardType:
                         const TextInputType.numberWithOptions(
                           decimal: true,
                         ),
                         onChanged: onQuantityChanged,
-                        decoration:
-                        const InputDecoration(
+                        style: const TextStyle(fontSize: 12),
+                        decoration: const InputDecoration(
                           border: InputBorder.none,
                           isDense: true,
                           hintText: 'Qty',
-                          contentPadding:
-                          EdgeInsets.zero,
+                          contentPadding: EdgeInsets.zero,
                         ),
                       ),
                     ),
                   ),
                 ],
               ),
-
-              // Conversion factor information
-              if (selectedOrderItem?.selectedUom !=
-                  null) ...[
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.swap_horiz_rounded,
-                      size: 16,
-                      color: Colors.grey.shade600,
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      '1 ${selectedOrderItem!.selectedUom!.uom} = '
-                          '${selectedOrderItem!.selectedUom!.conversionFactor} '
-                          '${item.stockUom}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
             ],
           ],
         ),
@@ -709,33 +642,32 @@ class _FieldContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(
-        12,
-        7,
-        10,
         9,
+        4,
+        7,
+        5,
       ),
       decoration: BoxDecoration(
         color: const Color(0xFFF8F9FB),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(9),
         border: Border.all(
           color: const Color(0xFFE2E5EA),
         ),
       ),
       child: Column(
-        crossAxisAlignment:
-        CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 9,
               fontWeight: FontWeight.w600,
               color: Colors.grey.shade600,
             ),
           ),
-          const SizedBox(height: 3),
+          const SizedBox(height: 1),
           SizedBox(
-            height: 30,
+            height: 24,
             child: child,
           ),
         ],

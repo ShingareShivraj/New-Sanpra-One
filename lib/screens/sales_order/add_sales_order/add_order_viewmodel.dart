@@ -20,6 +20,7 @@ class AddOrderViewModel extends BaseViewModel {
   final customerController = TextEditingController();
   final deliveryDateController = TextEditingController();
   final orderDiscountController = TextEditingController();
+  final termsController = TextEditingController();
 
   DateTime? selectedDeliveryDate;
   String orderId = "";
@@ -66,6 +67,7 @@ class AddOrderViewModel extends BaseViewModel {
           orderData = fetchedOrder;
           customerController.text = orderData.customer ?? "";
           deliveryDateController.text = orderData.deliveryDate ?? "";
+          termsController.text = orderData.terms ?? "";
           selectedItems.addAll(orderData.items ?? []);
           orderStatus = orderData.docstatus;
           isSame = true;
@@ -103,6 +105,7 @@ class AddOrderViewModel extends BaseViewModel {
 
     setBusy(true);
     orderData.items = selectedItems;
+    orderData.terms = termsController.text.trim();
 
     try {
       if (isEdit) {
@@ -538,6 +541,8 @@ class AddOrderViewModel extends BaseViewModel {
     customerController.dispose();
     deliveryDateController.dispose();
     orderDiscountController.dispose();
+
+    termsController.dispose();
 
     for (var c in _quantityControllers.values) {
       c.dispose();

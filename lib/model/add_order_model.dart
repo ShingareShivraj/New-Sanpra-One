@@ -10,6 +10,7 @@ class AddOrderModel {
   String? orderType;
   String? transactionDate;
   String? deliveryDate;
+  String? terms;
 
   int? skipDeliveryNote;
   int? isReverseCharge;
@@ -79,6 +80,7 @@ class AddOrderModel {
       this.orderType,
       this.transactionDate,
       this.deliveryDate,
+        this.terms,
       this.skipDeliveryNote,
       this.isReverseCharge,
       this.isExportWithGst,
@@ -147,6 +149,7 @@ class AddOrderModel {
     orderType = json['order_type'];
     transactionDate = json['transaction_date'];
     deliveryDate = json['delivery_date'];
+    terms = json['terms'];
 
     skipDeliveryNote = json['skip_delivery_note'];
     isReverseCharge = json['is_reverse_charge'];
@@ -233,7 +236,7 @@ class AddOrderModel {
     data['order_type'] = orderType;
     data['transaction_date'] = transactionDate;
     data['delivery_date'] = deliveryDate;
-
+    data['terms'] = terms;
     data['skip_delivery_note'] = skipDeliveryNote;
     data['is_reverse_charge'] = isReverseCharge;
     data['is_export_with_gst'] = isExportWithGst;

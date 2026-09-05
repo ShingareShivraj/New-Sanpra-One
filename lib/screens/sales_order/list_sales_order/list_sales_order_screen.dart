@@ -178,123 +178,22 @@ class ListOrderScreen extends StatelessWidget {
             ),
           ),
         ),
-        floatingActionButton: Builder(
-          builder: (context) {
-            final hasNormalSalesOrder =
-            model.isFormAvailableForDocType("Mobile Sales Order");
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () async {
+            final result = await Navigator.pushNamed(
+              context,
+              Routes.addOrderScreen,
+              arguments: const AddOrderScreenArguments(
+                orderid: "",
+              ),
+            );
 
-            final hasUomSalesOrder =
-            model.isFormAvailableForDocType("Mobile Sales Order UOM");
-
-            print("========== SALES ORDER FAB ROLES ==========");
-            print("Mobile Sales Order = $hasNormalSalesOrder");
-            print("Mobile Sales Order UOM = $hasUomSalesOrder");
-            print("============================================");
-
-            // ------------------------------------------------------------
-            // BOTH ROLES
-            // ------------------------------------------------------------
-            if (hasNormalSalesOrder && hasUomSalesOrder) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  // Create UOM Sales Order
-                  FloatingActionButton.extended(
-                    heroTag: "create_uom_order",
-                    onPressed: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const SalesOrderUomScreen(),
-                        ),
-                      );
-
-                      if (result == true) {
-                        await model.refresh();
-                      }
-                    },
-                    icon: const Icon(Icons.straighten),
-                    label: const Text("Create UOM Order"),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Create Normal Sales Order
-                  FloatingActionButton.extended(
-                    heroTag: "create_normal_order",
-                    onPressed: () async {
-                      final result = await Navigator.pushNamed(
-                        context,
-                        Routes.addOrderScreen,
-                        arguments: const AddOrderScreenArguments(
-                          orderid: "",
-                        ),
-                      );
-
-                      if (result == true) {
-                        await model.refresh();
-                      }
-                    },
-                    icon: const Icon(Icons.add_shopping_cart),
-                    label: const Text("Create Sales Order"),
-                  ),
-                ],
-              );
+            if (result == true) {
+              await model.refresh();
             }
-
-            // ------------------------------------------------------------
-            // UOM ROLE ONLY
-            // ------------------------------------------------------------
-            if (hasUomSalesOrder) {
-              return FloatingActionButton.extended(
-                heroTag: "create_uom_order",
-                onPressed: () async {
-                  final result = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const SalesOrderUomScreen(),
-                    ),
-                  );
-
-                  if (result == true) {
-                    await model.refresh();
-                  }
-                },
-                icon: const Icon(Icons.straighten),
-                label: const Text("Create UOM Order"),
-              );
-            }
-
-            // ------------------------------------------------------------
-            // NORMAL SALES ORDER ROLE ONLY
-            // ------------------------------------------------------------
-            if (hasNormalSalesOrder) {
-              return FloatingActionButton.extended(
-                heroTag: "create_normal_order",
-                onPressed: () async {
-                  final result = await Navigator.pushNamed(
-                    context,
-                    Routes.addOrderScreen,
-                    arguments: const AddOrderScreenArguments(
-                      orderid: "",
-                    ),
-                  );
-
-                  if (result == true) {
-                    await model.refresh();
-                  }
-                },
-                icon: const Icon(Icons.add_shopping_cart),
-                label: const Text("Create Sales Order"),
-              );
-            }
-
-            // ------------------------------------------------------------
-            // NO ROLE
-            // ------------------------------------------------------------
-            return const SizedBox.shrink();
           },
+          icon: const Icon(Icons.add_shopping_cart),
+          label: const Text("Create Sales Order"),
         ),
       ),
     );

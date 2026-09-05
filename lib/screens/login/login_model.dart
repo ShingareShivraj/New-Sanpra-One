@@ -12,7 +12,7 @@ class LoginViewModel extends BaseViewModel {
   final formGlobalKey = GlobalKey<FormState>();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController urlController =
-      TextEditingController(text: 'https://live.erpkey.in');
+      TextEditingController(text: 'https://pce.erpkey.in');
   final TextEditingController passwordController = TextEditingController();
   final FocusNode focusNode = FocusNode();
 

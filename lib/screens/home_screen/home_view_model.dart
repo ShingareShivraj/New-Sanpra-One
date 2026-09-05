@@ -285,6 +285,12 @@ class HomeViewModel extends BaseViewModel {
           finalPhoto = photoFile; // fallback ✅
         }
       }
+      position ??= await getLocation();
+      print("========== CHECK-IN LOCATION ==========");
+      print("Position: $position");
+      print("Latitude: ${position.latitude}");
+      print("Longitude: ${position.longitude}");
+      print("=======================================");
       final latitude =
           position?.latitude.toString() ?? "0";
 
