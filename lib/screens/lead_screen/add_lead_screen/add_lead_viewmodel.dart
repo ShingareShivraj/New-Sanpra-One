@@ -39,6 +39,7 @@ class AddLeadViewModel extends BaseViewModel {
   bool isEdit = false;
 
   File? selectedImage;
+  bool leadPhotoRequired = false;
 
   // ───────────────────────────────────────── Dropdowns ─────────────────────────────────────────
   List<String> industryTypes = [];
@@ -196,6 +197,9 @@ class AddLeadViewModel extends BaseViewModel {
   Future<void> initialise(BuildContext context, String leadId) async {
     setBusy(true);
     try {
+      leadPhotoRequired =
+      await AddLeadServices().getLeadPhotoSetting();
+
       leadDetails = await AddLeadServices().leadDetails() ?? LeadDetails();
 
       industryTypes = List<String>.from(leadDetails.industryType ?? []);
@@ -283,8 +287,8 @@ class AddLeadViewModel extends BaseViewModel {
   Future<void> onSavePressed(BuildContext context) async {
     if (!formKey.currentState!.validate()) return;
 
-    final trackingEnabled =
-        Provider.of<AppState>(context, listen: false).trackingEnabled;
+    // final trackingEnabled =
+    //     Provider.of<AppState>(context, listen: false).trackingEnabled;
 
     try {
       _syncControllersToModel();
@@ -298,7 +302,11 @@ class AddLeadViewModel extends BaseViewModel {
           ..longitude = pos.longitude.toString();
 
         // ✅ CAMERA LOGIC
-        if (trackingEnabled && selectedImage == null) {
+        // -------------------------
+// LEAD PHOTO
+// Only required when enabled for this employee
+// -------------------------
+        if (leadPhotoRequired && selectedImage == null) {
           final picked = await ImagePicker().pickImage(
             source: ImageSource.camera,
             imageQuality: 60,
@@ -307,11 +315,13 @@ class AddLeadViewModel extends BaseViewModel {
           );
 
           if (picked == null) {
-            Fluttertoast.showToast(msg: "Photo is required");
+            Fluttertoast.showToast(
+              msg: "Photo is required",
+            );
             return;
           }
 
-          File original = File(picked.path);
+          final original = File(picked.path);
 
           selectedImage = await addLocationLabel(
             original,

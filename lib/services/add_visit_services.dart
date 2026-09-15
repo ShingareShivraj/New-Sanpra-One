@@ -207,6 +207,33 @@ class AddVisitServices {
     return null;
   }
 
+  // =================== GET VISIT PHOTO SETTING ===================
+  Future<bool> getVisitPhotoSetting() async {
+    final baseUrl = await _getBaseUrl();
+
+    try {
+      final response = await _dio.get(
+        '$baseUrl/api/method/mobile.mobile_env.visit.get_visit_photo_setting',
+        options: Options(
+          headers: {
+            'Authorization': await _getToken(),
+          },
+        ),
+      );
+
+      if (response.statusCode == 200 &&
+          response.data["data"] != null) {
+        return response.data["data"]["custom_visit_photo"] == true;
+      }
+    } on DioException catch (e) {
+      Logger().e(e.response?.data ?? e);
+    } catch (e) {
+      Logger().e(e);
+    }
+
+    return false;
+  }
+
   // =================== FETCH CUSTOMER ===================
   Future<List<PartyDetails>> fetchCustomer() async {
     final baseUrl = await _getBaseUrl();

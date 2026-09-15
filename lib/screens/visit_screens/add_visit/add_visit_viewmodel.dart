@@ -38,9 +38,12 @@ class AddVisitViewModel extends BaseViewModel {
   DateTime currentDateTime = DateTime.now();
 
   // ✅ Upload UX
+// ✅ Upload UX
   bool uploading = false;
   double uploadProgress = 0.0;
 
+// ✅ Employee Visit Photo Setting
+  bool visitPhotoRequired = false;
 
 
   //================== GEO LOCATION TAGS - ADDED BY SHIV==============
@@ -95,6 +98,9 @@ class AddVisitViewModel extends BaseViewModel {
     setBusy(true);
     try {
       allParties = await AddVisitServices().fetchCustomer();
+
+      visitPhotoRequired =
+      await AddVisitServices().getVisitPhotoSetting();
 
       if (visitId.isNotEmpty) {
 
@@ -213,13 +219,9 @@ class AddVisitViewModel extends BaseViewModel {
       }
 
       // 🔥 GET GLOBAL VALUE
-      final trackingEnabled =
-          Provider.of<AppState>(context, listen: false).trackingEnabled;
-
       File? imageFile;
 
-      // 🔥 CONDITION BASED ON BACKEND FLAG
-      if (trackingEnabled) {
+      if (visitPhotoRequired) {
         final photo = await _picker.pickImage(
           source: ImageSource.camera,
           imageQuality: 60,
@@ -228,18 +230,18 @@ class AddVisitViewModel extends BaseViewModel {
         );
 
         if (photo == null) {
-          Fluttertoast.showToast(msg: "Photo is required");
+          Fluttertoast.showToast(
+            msg: "Photo is required",
+          );
           return;
         }
 
-        // OPTIONAL: Add location label
         imageFile = await addLocationLabel(
           File(photo.path),
           pos.latitude,
           pos.longitude,
         );
       } else {
-        // ❌ No photo required
         imageFile = null;
       }
 

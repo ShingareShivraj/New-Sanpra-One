@@ -82,17 +82,36 @@ class AddLeadServices {
   }
 
   /// ✅ Update Lead
-  Future<bool> updateLead(AddLeadModel leadDetails) async {
+  /// ✅ Update Lead
+  Future<bool> updateLead(
+      AddLeadModel leadDetails, {
+        File? imageFile,
+      }) async {
     try {
       final url =
           '${await _getBaseUrl()}/api/method/mobile.mobile_env.lead.create_lead';
       final token = await _getToken();
+
       _log.i("➡️ Updating Lead: ${leadDetails.name}");
+
+      final formData = FormData.fromMap({
+        ...leadDetails.toJson(),
+        if (imageFile != null)
+          "image": await MultipartFile.fromFile(
+            imageFile.path,
+            filename: imageFile.path.split('/').last,
+          ),
+      });
 
       final response = await _dio.put(
         url,
-        options: Options(headers: {'Authorization': token}),
-        data: leadDetails.toJson(),
+        data: formData,
+        options: Options(
+          headers: {
+            'Authorization': token,
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
       );
 
       if (response.statusCode == 200) {
@@ -100,12 +119,14 @@ class AddLeadServices {
         Fluttertoast.showToast(msg: "Lead Updated Successfully");
         return true;
       }
+
       Fluttertoast.showToast(msg: "Unable to update Lead!");
     } on DioException catch (e) {
       _handleError(e, message: "Failed to update Lead");
     } catch (e, st) {
       _log.e("Unexpected error updating lead: $e", stackTrace: st);
     }
+
     return false;
   }
 
@@ -197,5 +218,33 @@ class AddLeadServices {
       _log.e("Unexpected error fetching lead details: $e", stackTrace: st);
     }
     return null;
+  }
+
+
+  /// Get Lead Photo Setting for current employee
+  Future<bool> getLeadPhotoSetting() async {
+    final baseUrl = await _getBaseUrl();
+
+    try {
+      final response = await _dio.get(
+        '$baseUrl/api/method/mobile.mobile_env.lead.get_lead_photo_setting',
+        options: Options(
+          headers: {
+            'Authorization': await _getToken(),
+          },
+        ),
+      );
+
+      if (response.statusCode == 200 &&
+          response.data["data"] != null) {
+        return response.data["data"]["custom_lead_photo"] == true;
+      }
+    } on DioException catch (e) {
+      _log.e(e.response?.data ?? e);
+    } catch (e) {
+      _log.e(e);
+    }
+
+    return false;
   }
 }
